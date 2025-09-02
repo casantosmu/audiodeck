@@ -39,9 +39,17 @@ export default function App() {
     setSelectedFile(filePath);
   };
 
+  const handleClearFile = () => {
+    setSelectedFile(null);
+  };
+
   return (
-    <div className="flex h-screen w-screen bg-gray-900 text-gray-100">
-      <div className="flex-none w-80 border-r border-gray-700">
+    <div className="h-dvh w-screen bg-gray-900 text-gray-100 lg:flex">
+      <div
+        className={`${
+          selectedFile ? "hidden" : "block"
+        } h-full w-full lg:block lg:w-80 lg:flex-none lg:border-r lg:border-gray-700`}
+      >
         <FileBrowser
           currentPath={currentPath}
           items={itemsForCurrentPath}
@@ -49,8 +57,15 @@ export default function App() {
           onFileSelect={handleFileSelect}
         />
       </div>
-      <div className="flex-1 flex flex-col">
-        <SpectrogramDisplay filePath={selectedFile} />
+      <div
+        className={`${
+          selectedFile ? "block" : "hidden"
+        } h-full w-full lg:block lg:flex-1`}
+      >
+        <SpectrogramDisplay
+          filePath={selectedFile}
+          onClearFile={handleClearFile}
+        />
       </div>
     </div>
   );
