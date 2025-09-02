@@ -44,11 +44,11 @@ export default function App() {
   };
 
   return (
-    <div className="h-dvh w-screen bg-gray-900 text-gray-100 lg:flex">
+    <div className="h-dvh w-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 lg:flex">
       <div
         className={`${
           selectedFile ? "hidden" : "block"
-        } h-full w-full lg:block lg:w-80 lg:flex-none lg:border-r lg:border-gray-700`}
+        } h-full w-full lg:block lg:w-80 lg:flex-none lg:border-r lg:border-gray-200 dark:lg:border-gray-700`}
       >
         <FileBrowser
           currentPath={currentPath}
