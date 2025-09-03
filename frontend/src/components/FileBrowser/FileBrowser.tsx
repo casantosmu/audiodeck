@@ -23,7 +23,6 @@ export default function FileBrowser({
     if (currentPath === "/") {
       return;
     }
-
     const parentPath =
       currentPath.substring(0, currentPath.lastIndexOf("/")) || "/";
     onDirectoryChange(parentPath);
@@ -31,7 +30,6 @@ export default function FileBrowser({
 
   const handleItemClick = (item: FileItem) => {
     const newPath = `${currentPath === "/" ? "" : currentPath}/${item.name}`;
-
     if (item.isDirectory) {
       onDirectoryChange(newPath);
     } else {
@@ -46,7 +44,8 @@ export default function FileBrowser({
           type="button"
           onClick={handleUpDirectory}
           disabled={currentPath === "/"}
-          className="cursor-pointer p-1 px-2 mr-3 text-lg text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-md hover:border-sky-700 hover:text-sky-700 dark:hover:border-sky-400 dark:hover:text-sky-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:dark:hover:border-gray-600 disabled:hover:text-gray-500 disabled:dark:hover:text-gray-400"
+          aria-label="Go up one directory"
+          className="cursor-pointer p-1 px-2 mr-3 text-lg text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-md hover:border-sky-700 hover:text-sky-700 dark:hover:border-sky-400 dark:hover:text-sky-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:dark:hover:border-gray-600 disabled:hover:text-gray-500 disabled:dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-offset-gray-800"
         >
           <HiOutlineArrowUp size={18} />
         </button>
@@ -64,24 +63,26 @@ export default function FileBrowser({
         {items.map((item) => (
           <li
             key={item.name}
-            className="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 border-b border-gray-200 dark:border-gray-900"
-            onClick={() => {
-              handleItemClick(item);
-            }}
-            onDoubleClick={() => {
-              handleItemClick(item);
-            }}
+            className="border-b border-gray-200 dark:border-gray-900"
           >
-            <span className="mr-3 text-gray-500 dark:text-gray-400">
-              {item.isDirectory ? (
-                <HiOutlineFolder size={20} />
-              ) : (
-                <HiOutlineDocument size={20} />
-              )}
-            </span>
-            <span className="text-gray-900 dark:text-gray-200 truncate">
-              {item.name}
-            </span>
+            <button
+              type="button"
+              onClick={() => {
+                handleItemClick(item);
+              }}
+              className="flex items-center p-3 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500"
+            >
+              <span className="mr-3 text-gray-500 dark:text-gray-400">
+                {item.isDirectory ? (
+                  <HiOutlineFolder size={20} aria-hidden="true" />
+                ) : (
+                  <HiOutlineDocument size={20} aria-hidden="true" />
+                )}
+              </span>
+              <span className="text-gray-900 dark:text-gray-200 truncate">
+                {item.name}
+              </span>
+            </button>
           </li>
         ))}
       </ul>
