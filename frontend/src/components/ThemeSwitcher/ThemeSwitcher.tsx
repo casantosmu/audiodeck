@@ -1,5 +1,5 @@
 import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi";
-import useTheme from "../../context/ThemeContext/useTheme";
+import useTheme from "../../context/Theme/useTheme";
 
 export default function ThemeSwitcher() {
   const { theme, toggleTheme } = useTheme();
