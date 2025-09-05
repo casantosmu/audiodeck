@@ -16,10 +16,10 @@ type config struct {
 	mediaDir string
 }
 
-// type application struct {
-// 	config config
-// 	logger *slog.Logger
-// }
+type application struct {
+	config config
+	logger *slog.Logger
+}
 
 func main() {
 	var cfg config
@@ -30,17 +30,14 @@ func main() {
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	// app := &application{
-	// 	config: cfg,
-	// 	logger: logger,
-	// }
-
-	mux := http.NewServeMux()
-	// HANDLERS
+	app := &application{
+		config: cfg,
+		logger: logger,
+	}
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.port),
-		Handler:      mux,
+		Handler:      app.routes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
