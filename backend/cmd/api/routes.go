@@ -2,11 +2,13 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func (app *application) routes() http.Handler {
-	router := http.NewServeMux()
-	router.HandleFunc("/", helloHandler)
+	router := httprouter.New()
+	router.HandlerFunc(http.MethodGet, "/", helloHandler)
 	return router
 }
 
