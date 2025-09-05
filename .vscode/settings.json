@@ -4,5 +4,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "explicit"
+  },
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
   }
 }
