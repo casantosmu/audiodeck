@@ -17,8 +17,8 @@ type config struct {
 }
 
 type application struct {
-	config config
-	logger *slog.Logger
+	logger    *slog.Logger
+	mediaRoot *os.Root
 }
 
 func main() {
@@ -30,9 +30,26 @@ func main() {
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
+	info, err := os.Stat(cfg.mediaDir)
+	if err != nil {
+		logger.Error("media directory validation failed", "path", cfg.mediaDir, "error", err)
+		os.Exit(1)
+	}
+	if !info.IsDir() {
+		logger.Error("media path is not a directory", "path", cfg.mediaDir)
+		os.Exit(1)
+	}
+
+	root, err := os.OpenRoot(cfg.mediaDir)
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+	defer root.Close()
+
 	app := &application{
-		config: cfg,
-		logger: logger,
+		logger:    logger,
+		mediaRoot: root,
 	}
 
 	srv := &http.Server{
@@ -44,8 +61,8 @@ func main() {
 		ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelError),
 	}
 
-	logger.Info("starting server", "addr", srv.Addr, "media_dir", cfg.mediaDir)
-	err := srv.ListenAndServe()
+	logger.Info("starting server", "addr", srv.Addr, "path", cfg.mediaDir)
+	err = srv.ListenAndServe()
 	logger.Error(err.Error())
 	os.Exit(1)
 }

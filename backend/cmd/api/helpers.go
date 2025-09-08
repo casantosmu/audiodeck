@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"maps"
 	"net/http"
+	"net/url"
 )
 
 func (app *application) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
@@ -19,4 +20,12 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data any, h
 	w.Write(js)
 
 	return nil
+}
+
+func (app *application) readString(qs url.Values, key string, defaultValue string) string {
+	s := qs.Get(key)
+	if s == "" {
+		return defaultValue
+	}
+	return s
 }
