@@ -8,10 +8,6 @@ import (
 
 func (app *application) routes() http.Handler {
 	router := httprouter.New()
-	router.HandlerFunc(http.MethodGet, "/", helloHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/files", app.listFilesHandler)
 	return router
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello world!"))
 }
