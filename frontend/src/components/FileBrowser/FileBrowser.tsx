@@ -1,7 +1,9 @@
 import {
   HiOutlineArrowUp,
   HiOutlineDocument,
+  HiOutlineExclamationCircle,
   HiOutlineFolder,
+  HiOutlineFolderOpen,
 } from "react-icons/hi";
 import type FileItem from "../../core/FileItem";
 import ThemeSwitcher from "../ThemeSwitcher/ThemeSwitcher";
@@ -9,6 +11,8 @@ import ThemeSwitcher from "../ThemeSwitcher/ThemeSwitcher";
 interface FileBrowserProps {
   currentPath: string;
   items: FileItem[];
+  isLoading: boolean;
+  isError: boolean;
   onFileSelect: (path: string) => void;
   onDirectoryChange: (path: string) => void;
 }
@@ -16,20 +20,21 @@ interface FileBrowserProps {
 export default function FileBrowser({
   currentPath,
   items,
+  isLoading,
+  isError,
   onFileSelect,
   onDirectoryChange,
 }: FileBrowserProps) {
   const handleUpDirectory = () => {
-    if (currentPath === "/") {
+    if (!currentPath) {
       return;
     }
-    const parentPath =
-      currentPath.substring(0, currentPath.lastIndexOf("/")) || "/";
+    const parentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
     onDirectoryChange(parentPath);
   };
 
   const handleItemClick = (item: FileItem) => {
-    const newPath = `${currentPath === "/" ? "" : currentPath}/${item.name}`;
+    const newPath = currentPath ? `${currentPath}/${item.name}` : item.name;
     if (item.isDirectory) {
       onDirectoryChange(newPath);
     } else {
@@ -37,28 +42,34 @@ export default function FileBrowser({
     }
   };
 
-  return (
-    <div className="bg-gray-50 dark:bg-gray-800 flex flex-col h-full">
-      <div className="flex items-center p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <button
-          type="button"
-          onClick={handleUpDirectory}
-          disabled={currentPath === "/"}
-          aria-label="Go up one directory"
-          className="cursor-pointer p-1 px-2 mr-3 text-lg text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-md hover:border-sky-700 hover:text-sky-700 dark:hover:border-sky-400 dark:hover:text-sky-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:dark:hover:border-gray-600 disabled:hover:text-gray-500 disabled:dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-offset-gray-800"
-        >
-          <HiOutlineArrowUp size={18} />
-        </button>
-        <span
-          className="text-sm text-gray-500 dark:text-gray-400 truncate flex-grow"
-          title={currentPath}
-        >
-          {currentPath}
-        </span>
-        <div className="ml-3">
-          <ThemeSwitcher />
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center h-full text-gray-500 dark:text-gray-400">
+          <p>Loading...</p>
         </div>
-      </div>
+      );
+    }
+
+    if (isError) {
+      return (
+        <div className="flex flex-col justify-center items-center h-full text-red-700 dark:text-red-400 p-4">
+          <HiOutlineExclamationCircle size={48} className="mb-2" />
+          <p className="text-center">Error loading directory.</p>
+        </div>
+      );
+    }
+
+    if (items.length === 0) {
+      return (
+        <div className="flex flex-col justify-center items-center h-full text-gray-500 dark:text-gray-400">
+          <HiOutlineFolderOpen size={48} className="mb-2" />
+          <p>This directory is empty.</p>
+        </div>
+      );
+    }
+
+    return (
       <ul className="list-none p-0 m-0 overflow-y-auto flex-grow">
         {items.map((item) => (
           <li
@@ -86,6 +97,32 @@ export default function FileBrowser({
           </li>
         ))}
       </ul>
+    );
+  };
+
+  return (
+    <div className="bg-gray-50 dark:bg-gray-800 flex flex-col h-full">
+      <div className="flex items-center p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <button
+          type="button"
+          onClick={handleUpDirectory}
+          disabled={!currentPath}
+          aria-label="Go up one directory"
+          className="cursor-pointer p-1 px-2 mr-3 text-lg text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-md hover:border-sky-700 hover:text-sky-700 dark:hover:border-sky-400 dark:hover:text-sky-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:dark:hover:border-gray-600 disabled:hover:text-gray-500 disabled:dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-offset-gray-800"
+        >
+          <HiOutlineArrowUp size={18} />
+        </button>
+        <span
+          className="text-sm text-gray-500 dark:text-gray-400 truncate flex-grow"
+          title={currentPath}
+        >
+          {currentPath}
+        </span>
+        <div className="ml-3">
+          <ThemeSwitcher />
+        </div>
+      </div>
+      {renderContent()}
     </div>
   );
 }

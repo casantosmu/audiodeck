@@ -19,7 +19,7 @@ type FileList struct {
 
 func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request) {
 	qs := r.URL.Query()
-	path := app.readString(qs, "path", "/")
+	path := app.readString(qs, "path", ".")
 
 	dir, err := app.mediaRoot.Open(path)
 	if err != nil {
