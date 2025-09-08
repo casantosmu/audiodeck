@@ -13,6 +13,7 @@ func (app *application) routes() http.Handler {
 	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
 
 	router.HandlerFunc(http.MethodGet, "/v1/files", app.listFilesHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/audio", app.getAudioFileHandler)
 
 	return app.recoverPanic(router)
 }

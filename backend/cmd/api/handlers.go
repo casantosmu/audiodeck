@@ -68,3 +68,36 @@ func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request)
 		app.serverErrorResponse(w, r, err)
 	}
 }
+
+func (app *application) getAudioFileHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Query().Get("path")
+	if path == "" {
+		app.badRequestResponse(w, r, errors.New("path parameter is required"))
+		return
+	}
+
+	file, err := app.mediaRoot.Open(path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			app.notFoundResponse(w, r)
+			return
+		}
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+	defer file.Close()
+
+	info, err := file.Stat()
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	if info.IsDir() {
+		err := fmt.Errorf("path '%s' is a directory", path)
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	http.ServeContent(w, r, info.Name(), info.ModTime(), file)
+}
