@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"sort"
+	"strings"
 
 	"github.com/casantosmu/audiodeck/internal/media"
+	"github.com/maruel/natural"
 )
 
 type FileItem struct {
@@ -66,6 +69,14 @@ func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request)
 			})
 		}
 	}
+
+	sort.Slice(items, func(i, j int) bool {
+		a, b := items[i], items[j]
+		if a.IsDir != b.IsDir {
+			return a.IsDir
+		}
+		return natural.Less(strings.ToLower(a.Name), strings.ToLower(b.Name))
+	})
 
 	response := FileList{
 		Path:  path,
