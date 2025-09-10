@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/casantosmu/audiodeck/internal/media"
 )
 
 type FileItem struct {
@@ -52,10 +54,17 @@ func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request)
 
 	items := make([]FileItem, 0, len(entries))
 	for _, entry := range entries {
-		items = append(items, FileItem{
-			Name:  entry.Name(),
-			IsDir: entry.IsDir(),
-		})
+		if entry.IsDir() {
+			items = append(items, FileItem{
+				Name:  entry.Name(),
+				IsDir: true,
+			})
+		} else if media.IsSupportedExtension(entry.Name()) {
+			items = append(items, FileItem{
+				Name:  entry.Name(),
+				IsDir: false,
+			})
+		}
 	}
 
 	response := FileList{
@@ -92,9 +101,19 @@ func (app *application) getAudioFileHandler(w http.ResponseWriter, r *http.Reque
 		app.serverErrorResponse(w, r, err)
 		return
 	}
-
 	if info.IsDir() {
 		err := fmt.Errorf("path '%s' is a directory", path)
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	isAudio, err := media.IsSupportedAudioContent(file)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+	if !isAudio {
+		err := fmt.Errorf("file '%s' is not an audio file", path)
 		app.badRequestResponse(w, r, err)
 		return
 	}
