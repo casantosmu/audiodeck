@@ -42,7 +42,6 @@ func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request)
 		app.serverErrorResponse(w, r, err)
 		return
 	}
-
 	if !info.IsDir() {
 		err := fmt.Errorf("path '%s' is not a directory", path)
 		app.badRequestResponse(w, r, err)

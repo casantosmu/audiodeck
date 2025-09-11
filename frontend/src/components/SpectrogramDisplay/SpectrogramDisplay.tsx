@@ -80,12 +80,9 @@ export default function SpectrogramDisplay({
         >
           <HiOutlineArrowLeft size={18} />
         </button>
-        <div className="truncate">
-          <h2 className="text-2xl font-bold text-sky-700 dark:text-sky-400 truncate">
-            {fileName}
-          </h2>
-          {/* TODO: Metadata */}
-        </div>
+        <h2 className="text-2xl font-bold text-sky-700 dark:text-sky-400 truncate">
+          {fileName}
+        </h2>
       </div>
 
       <div

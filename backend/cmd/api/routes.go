@@ -19,7 +19,7 @@ func (app *application) routes() http.Handler {
 
 	router := httprouter.New()
 
-	router.NotFound = http.Handler(http.FileServer(http.FS(uiFS)))
+	router.NotFound = http.Handler(http.FileServerFS(uiFS))
 
 	router.HandlerFunc(http.MethodGet, "/v1/files", app.listFilesHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/audio", app.getAudioFileHandler)

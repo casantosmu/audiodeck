@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-// const version = "0.0.0"
-
 type config struct {
 	port     int
 	mediaDir string
