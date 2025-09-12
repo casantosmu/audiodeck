@@ -8,6 +8,7 @@ import {
 import type FileItem from "../../core/FileItem";
 import IconButton from "../Button/IconButton";
 import ThemeSwitcher from "../ThemeSwitcher/ThemeSwitcher";
+import TopBar from "../TopBar/TopBar";
 
 interface FileBrowserProps {
   currentPath: string;
@@ -103,26 +104,23 @@ export default function FileBrowser({
 
   return (
     <div className="bg-gray-50 dark:bg-gray-800 flex flex-col h-full">
-      <div className="flex items-center p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <IconButton
-          type="button"
-          onClick={handleUpDirectory}
-          disabled={!currentPath}
-          aria-label="Go up one directory"
-          className="mr-3"
-        >
-          <HiOutlineArrowUp size={18} />
-        </IconButton>
-        <span
-          className="text-sm text-gray-500 dark:text-gray-400 truncate flex-grow"
-          title={currentPath}
-        >
+      <TopBar
+        startContent={
+          <IconButton
+            type="button"
+            onClick={handleUpDirectory}
+            disabled={!currentPath}
+            aria-label="Go up one directory"
+          >
+            <HiOutlineArrowUp size={18} />
+          </IconButton>
+        }
+        endContent={<ThemeSwitcher />}
+      >
+        <span className="text-sm text-gray-500 dark:text-gray-400">
           {currentPath}
         </span>
-        <div className="ml-3">
-          <ThemeSwitcher />
-        </div>
-      </div>
+      </TopBar>
       {renderContent()}
     </div>
   );

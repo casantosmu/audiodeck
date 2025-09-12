@@ -4,6 +4,7 @@ import WaveSurfer from "wavesurfer.js";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.js";
 import useTheme from "../../context/Theme/useTheme";
 import IconButton from "../Button/IconButton";
+import TopBar from "../TopBar/TopBar";
 
 interface SpectrogramDisplayProps {
   filePath: string | null;
@@ -73,19 +74,22 @@ export default function SpectrogramDisplay({
 
   return (
     <div className="bg-gray-50 dark:bg-gray-800 h-full flex flex-col">
-      <div className="flex items-center gap-x-4 p-5 border-b border-gray-200 dark:border-gray-700">
-        <IconButton
-          type="button"
-          onClick={onClearFile}
-          aria-label="Go back to file list"
-          className="lg:hidden"
-        >
-          <HiOutlineArrowLeft size={18} />
-        </IconButton>
-        <h2 className="text-2xl font-bold text-sky-700 dark:text-sky-400 truncate">
+      <TopBar
+        startContent={
+          <IconButton
+            type="button"
+            onClick={onClearFile}
+            aria-label="Go back to file list"
+            className="lg:hidden"
+          >
+            <HiOutlineArrowLeft size={18} />
+          </IconButton>
+        }
+      >
+        <h2 className="text-lg font-semibold text-sky-700 dark:text-sky-400 truncate">
           {fileName}
         </h2>
-      </div>
+      </TopBar>
 
       <div
         ref={wrapperRef}
