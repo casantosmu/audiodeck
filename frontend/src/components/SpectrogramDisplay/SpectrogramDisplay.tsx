@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { HiOutlineArrowLeft, HiOutlineExclamationCircle } from "react-icons/hi";
 import WaveSurfer from "wavesurfer.js";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.js";
-import useTheme from "../../context/Theme/useTheme";
 import IconButton from "../Button/IconButton";
 import TopBar from "../TopBar/TopBar";
 
@@ -17,8 +16,6 @@ export default function SpectrogramDisplay({
   filePath,
   onClearFile,
 }: SpectrogramDisplayProps) {
-  const { theme } = useTheme();
-
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -39,10 +36,13 @@ export default function SpectrogramDisplay({
       container: containerRef.current,
       height: 0,
       url: `/v1/audio?path=${encodeURIComponent(filePath)}`,
+      sampleRate: 44_100,
       plugins: [
         Spectrogram.create({
           labels: true,
           height: calculatedHeight > 0 ? calculatedHeight : 256,
+          useWebWorker: true,
+          scale: "linear",
         }),
       ],
     });
@@ -60,7 +60,7 @@ export default function SpectrogramDisplay({
     return () => {
       ws.destroy();
     };
-  }, [filePath, theme]);
+  }, [filePath]);
 
   if (!filePath) {
     return (
@@ -93,14 +93,12 @@ export default function SpectrogramDisplay({
 
       <div
         ref={wrapperRef}
-        className="flex-grow m-2 lg:m-5 rounded-lg overflow-hidden relative"
+        className="flex-grow m-2 rounded-lg overflow-hidden relative"
       >
         <div className="w-full h-full overflow-x-auto">
           <div
             ref={containerRef}
-            className={`h-full bg-gray-100 dark:bg-black ${
-              status === "ready" ? "min-w-[800px]" : ""
-            }`}
+            className={`h-full bg-gray-100 dark:bg-black`}
             aria-label="Spectrogram"
           />
         </div>
