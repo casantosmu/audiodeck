@@ -3,6 +3,7 @@ import { HiOutlineArrowLeft, HiOutlineExclamationCircle } from "react-icons/hi";
 import WaveSurfer from "wavesurfer.js";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.js";
 import useTheme from "../../context/Theme/useTheme";
+import IconButton from "../Button/IconButton";
 
 interface SpectrogramDisplayProps {
   filePath: string | null;
@@ -73,13 +74,14 @@ export default function SpectrogramDisplay({
   return (
     <div className="bg-gray-50 dark:bg-gray-800 h-full flex flex-col">
       <div className="flex items-center gap-x-4 p-5 border-b border-gray-200 dark:border-gray-700">
-        <button
+        <IconButton
           type="button"
           onClick={onClearFile}
-          className="cursor-pointer p-2 text-lg text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-md hover:border-sky-700 hover:text-sky-700 dark:hover:border-sky-400 dark:hover:text-sky-400 lg:hidden"
+          aria-label="Go back to file list"
+          className="lg:hidden"
         >
           <HiOutlineArrowLeft size={18} />
-        </button>
+        </IconButton>
         <h2 className="text-2xl font-bold text-sky-700 dark:text-sky-400 truncate">
           {fileName}
         </h2>

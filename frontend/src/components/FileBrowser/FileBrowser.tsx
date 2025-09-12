@@ -6,6 +6,7 @@ import {
   HiOutlineFolderOpen,
 } from "react-icons/hi";
 import type FileItem from "../../core/FileItem";
+import IconButton from "../Button/IconButton";
 import ThemeSwitcher from "../ThemeSwitcher/ThemeSwitcher";
 
 interface FileBrowserProps {
@@ -103,15 +104,15 @@ export default function FileBrowser({
   return (
     <div className="bg-gray-50 dark:bg-gray-800 flex flex-col h-full">
       <div className="flex items-center p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <button
+        <IconButton
           type="button"
           onClick={handleUpDirectory}
           disabled={!currentPath}
           aria-label="Go up one directory"
-          className="cursor-pointer p-1 px-2 mr-3 text-lg text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-md hover:border-sky-700 hover:text-sky-700 dark:hover:border-sky-400 dark:hover:text-sky-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:dark:hover:border-gray-600 disabled:hover:text-gray-500 disabled:dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-offset-gray-800"
+          className="mr-3"
         >
           <HiOutlineArrowUp size={18} />
-        </button>
+        </IconButton>
         <span
           className="text-sm text-gray-500 dark:text-gray-400 truncate flex-grow"
           title={currentPath}
