@@ -11,7 +11,7 @@ RUN pnpm install --frozen-lockfile
 COPY frontend/ ./
 RUN pnpm build
 
-FROM golang:1.25-alpine
+FROM golang:1.25-alpine AS backend
 WORKDIR /app
 
 COPY backend/go.mod backend/go.sum ./
@@ -20,8 +20,13 @@ RUN go mod download
 COPY backend/ ./
 COPY --from=frontend /app/dist ./cmd/api/ui
 
-RUN go build -ldflags='-s' -o ./bin/api ./cmd/api
+RUN go build -ldflags='-s' -o ./bin/audiodeck ./cmd/api
+
+FROM alpine:3.22
+WORKDIR /app
+
+COPY --from=backend /app ./
 
 EXPOSE 4000
 
-CMD ["./bin/api", "-port", "4000", "-media-dir", "/media"]
+CMD ["./bin/audiodeck", "-port", "4000", "-media-dir", "/media"]
