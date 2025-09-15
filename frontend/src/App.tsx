@@ -1,25 +1,33 @@
-import { useState } from "react";
+import { useSearchParams } from "react-router";
 import FileBrowser from "./components/FileBrowser/FileBrowser";
 import SpectrogramDisplay from "./components/SpectrogramDisplay/SpectrogramDisplay";
 import useFiles from "./hooks/useFiles";
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState("");
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentPath = searchParams.get("path") ?? "";
+  const selectedFile = searchParams.get("file");
 
   const { data, isLoading, isError } = useFiles(currentPath);
 
   const handleDirectoryChange = (newPath: string) => {
-    setCurrentPath(newPath);
-    setSelectedFile(null); // Deselect file when changing directory
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("path", newPath);
+    newParams.delete("file");
+    setSearchParams(newParams);
   };
 
   const handleFileSelect = (filePath: string) => {
-    setSelectedFile(filePath);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("file", filePath);
+    setSearchParams(newParams);
   };
 
   const handleClearFile = () => {
-    setSelectedFile(null);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("file");
+    setSearchParams(newParams);
   };
 
   return (
