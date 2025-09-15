@@ -117,14 +117,14 @@ func (app *application) getAudioFileHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	isAudio, err := media.IsSupportedAudioContent(file)
+	_, err = media.DetectType(file)
 	if err != nil {
+		if errors.Is(err, media.ErrUnsupportedMediaType) {
+			err := fmt.Errorf("unsupported media type for file: %s", path)
+			app.badRequestResponse(w, r, err)
+			return
+		}
 		app.serverErrorResponse(w, r, err)
-		return
-	}
-	if !isAudio {
-		err := fmt.Errorf("file '%s' is not an audio file", path)
-		app.badRequestResponse(w, r, err)
 		return
 	}
 

@@ -1,38 +1,63 @@
 package media
 
 import (
+	"errors"
 	"io"
 	"path/filepath"
 	"strings"
 
-	"github.com/h2non/filetype"
+	"github.com/h2non/filetype/matchers"
 )
 
-var SupportedAudioExtensions = map[string]struct{}{
+var (
+	ErrUnsupportedMediaType = errors.New("unsupported media type")
+)
+
+type Type string
+
+const (
+	MP3     Type = "mp3"
+	FLAC    Type = "flac"
+	WAV     Type = "wav"
+	Unknown Type = ""
+
+	headerSize = 261
+)
+
+var supportedExtensions = map[string]struct{}{
 	".mp3":  {},
-	".m4a":  {},
 	".flac": {},
 	".wav":  {},
-	".ogg":  {},
-	".aac":  {},
 }
 
 func IsSupportedExtension(name string) bool {
 	ext := strings.ToLower(filepath.Ext(name))
-	_, ok := SupportedAudioExtensions[ext]
+	_, ok := supportedExtensions[ext]
 	return ok
 }
 
-func IsSupportedAudioContent(file io.ReadSeeker) (bool, error) {
-	buffer := make([]byte, 261)
-	_, err := file.Read(buffer)
-	if err != nil && err != io.EOF {
-		return false, err
+func DetectType(rs io.ReadSeeker) (Type, error) {
+	header := make([]byte, headerSize)
+
+	_, err := rs.Read(header)
+	if err != nil {
+		return Unknown, err
 	}
 
-	if _, err = file.Seek(0, io.SeekStart); err != nil {
-		return false, err
+	_, err = rs.Seek(0, io.SeekStart)
+	if err != nil {
+		return Unknown, err
 	}
 
-	return filetype.IsAudio(buffer), nil
+	if matchers.Mp3(header) {
+		return MP3, nil
+	}
+	if matchers.Flac(header) {
+		return FLAC, nil
+	}
+	if matchers.Wav(header) {
+		return WAV, nil
+	}
+
+	return Unknown, ErrUnsupportedMediaType
 }
