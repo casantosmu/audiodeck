@@ -23,7 +23,7 @@ export default function App() {
   };
 
   return (
-    <div className="h-dvh w-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 lg:flex overflow-hidden">
+    <div className="h-dvh w-screen overflow-hidden bg-white text-gray-900 lg:flex dark:bg-gray-900 dark:text-gray-100">
       <div
         className={`${
           selectedFile ? "hidden" : "block"

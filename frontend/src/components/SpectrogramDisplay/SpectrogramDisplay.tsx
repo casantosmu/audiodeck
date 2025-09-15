@@ -64,8 +64,8 @@ export default function SpectrogramDisplay({
 
   if (!filePath) {
     return (
-      <div className="bg-gray-50 dark:bg-gray-800 h-full hidden lg:flex justify-center items-center">
-        <span className="text-gray-400 dark:text-gray-500 text-lg">
+      <div className="hidden h-full items-center justify-center bg-gray-50 lg:flex dark:bg-gray-800">
+        <span className="text-lg text-gray-400 dark:text-gray-500">
           Select an audio file to analyze
         </span>
       </div>
@@ -73,7 +73,7 @@ export default function SpectrogramDisplay({
   }
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 h-full flex flex-col">
+    <div className="flex h-full flex-col bg-gray-50 dark:bg-gray-800">
       <TopBar
         startContent={
           <IconButton
@@ -86,16 +86,16 @@ export default function SpectrogramDisplay({
           </IconButton>
         }
       >
-        <h2 className="text-lg font-semibold text-sky-700 dark:text-sky-400 truncate">
+        <h2 className="truncate text-lg font-semibold text-sky-700 dark:text-sky-400">
           {fileName}
         </h2>
       </TopBar>
 
       <div
         ref={wrapperRef}
-        className="flex-grow m-2 rounded-lg overflow-hidden relative"
+        className="relative m-2 flex-grow overflow-hidden rounded-lg"
       >
-        <div className="w-full h-full overflow-x-auto">
+        <div className="h-full w-full overflow-x-auto">
           <div
             ref={containerRef}
             className={`h-full bg-gray-100 dark:bg-black`}
@@ -103,20 +103,20 @@ export default function SpectrogramDisplay({
           />
         </div>
         {status === "loading" && (
-          <div className="absolute inset-0 bg-gray-500/30 flex items-center justify-center">
-            <p className="text-white text-xl font-bold">Loading audio...</p>
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-500/30">
+            <p className="text-xl font-bold text-white">Loading audio...</p>
           </div>
         )}
         {status === "error" && (
-          <div className="absolute inset-0 bg-gray-50 dark:bg-gray-800 flex flex-col items-center justify-center p-4 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 p-4 text-center dark:bg-gray-800">
             <HiOutlineExclamationCircle
-              className="h-12 w-12 text-red-500 dark:text-red-400 mb-3"
+              className="mb-3 h-12 w-12 text-red-500 dark:text-red-400"
               aria-hidden="true"
             />
             <p className="text-lg font-semibold text-red-700 dark:text-red-300">
               Error Loading Audio File
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               The file may be corrupt or in an unsupported format.
             </p>
           </div>

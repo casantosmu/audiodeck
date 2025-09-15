@@ -47,7 +47,7 @@ export default function FileBrowser({
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div className="flex justify-center items-center h-full text-gray-500 dark:text-gray-400">
+        <div className="flex h-full items-center justify-center text-gray-500 dark:text-gray-400">
           <p>Loading...</p>
         </div>
       );
@@ -55,7 +55,7 @@ export default function FileBrowser({
 
     if (isError) {
       return (
-        <div className="flex flex-col justify-center items-center h-full text-red-700 dark:text-red-400 p-4">
+        <div className="flex h-full flex-col items-center justify-center p-4 text-red-700 dark:text-red-400">
           <HiOutlineExclamationCircle size={48} className="mb-2" />
           <p className="text-center">Error loading directory.</p>
         </div>
@@ -64,7 +64,7 @@ export default function FileBrowser({
 
     if (items.length === 0) {
       return (
-        <div className="flex flex-col justify-center items-center h-full text-gray-500 dark:text-gray-400">
+        <div className="flex h-full flex-col items-center justify-center text-gray-500 dark:text-gray-400">
           <HiOutlineFolderOpen size={48} className="mb-2" />
           <p>This directory is empty.</p>
         </div>
@@ -72,7 +72,7 @@ export default function FileBrowser({
     }
 
     return (
-      <ul className="list-none p-0 m-0 overflow-y-auto flex-grow">
+      <ul className="m-0 flex-grow list-none overflow-y-auto p-0">
         {items.map((item) => (
           <li
             key={item.name}
@@ -83,7 +83,7 @@ export default function FileBrowser({
               onClick={() => {
                 handleItemClick(item);
               }}
-              className="flex items-center p-3 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500"
+              className="flex w-full items-center p-3 text-left hover:bg-gray-100 focus:ring-2 focus:ring-sky-500 focus:outline-none focus:ring-inset dark:hover:bg-gray-700/50"
             >
               <span className="mr-3 text-gray-500 dark:text-gray-400">
                 {item.isDirectory ? (
@@ -92,7 +92,7 @@ export default function FileBrowser({
                   <HiOutlineDocument size={20} aria-hidden="true" />
                 )}
               </span>
-              <span className="text-gray-900 dark:text-gray-200 truncate">
+              <span className="truncate text-gray-900 dark:text-gray-200">
                 {item.name}
               </span>
             </button>
@@ -103,7 +103,7 @@ export default function FileBrowser({
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 flex flex-col h-full">
+    <div className="flex h-full flex-col bg-gray-50 dark:bg-gray-800">
       <TopBar
         startContent={
           <IconButton
