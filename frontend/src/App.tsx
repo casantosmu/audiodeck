@@ -23,11 +23,11 @@ export default function App() {
   };
 
   return (
-    <div className="h-dvh w-screen overflow-hidden bg-white text-gray-900 lg:flex dark:bg-gray-900 dark:text-gray-100">
+    <div className="h-dvh bg-white text-gray-900 lg:flex dark:bg-gray-900 dark:text-gray-100">
       <div
         className={`${
           selectedFile ? "hidden" : "block"
-        } h-full w-full lg:block lg:w-80 lg:flex-none lg:border-r lg:border-gray-200 dark:lg:border-gray-700`}
+        } h-full lg:block lg:w-80 lg:border-r lg:border-gray-200 dark:lg:border-gray-700`}
       >
         <FileBrowser
           currentPath={currentPath}
@@ -39,9 +39,7 @@ export default function App() {
         />
       </div>
       <div
-        className={`${
-          selectedFile ? "block" : "hidden"
-        } h-full w-full lg:block lg:flex-1`}
+        className={`${selectedFile ? "block" : "hidden"} h-full grow lg:block`}
       >
         <SpectrogramDisplay
           filePath={selectedFile}

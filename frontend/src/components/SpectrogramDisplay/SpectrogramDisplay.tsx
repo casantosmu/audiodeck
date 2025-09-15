@@ -64,10 +64,8 @@ export default function SpectrogramDisplay({
 
   if (!filePath) {
     return (
-      <div className="hidden h-full items-center justify-center bg-gray-50 lg:flex dark:bg-gray-800">
-        <span className="text-lg text-gray-400 dark:text-gray-500">
-          Select an audio file to analyze
-        </span>
+      <div className="flex h-full flex-col items-center justify-center bg-gray-50 text-lg text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+        Select an audio file to analyze
       </div>
     );
   }
@@ -93,22 +91,20 @@ export default function SpectrogramDisplay({
 
       <div
         ref={wrapperRef}
-        className="relative m-2 flex-grow overflow-hidden rounded-lg"
+        className="m-2 flex-grow overflow-hidden rounded-lg"
       >
-        <div className="h-full w-full overflow-x-auto">
-          <div
-            ref={containerRef}
-            className={`h-full bg-gray-100 dark:bg-black`}
-            aria-label="Spectrogram"
-          />
-        </div>
+        <div
+          ref={containerRef}
+          className={`h-full overflow-x-auto bg-gray-100 dark:bg-black ${status === "ready" ? "block" : "hidden"}`}
+          aria-label="Spectrogram"
+        ></div>
         {status === "loading" && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-500/30">
-            <p className="text-xl font-bold text-white">Loading audio...</p>
+          <div className="flex h-full flex-col items-center justify-center bg-gray-500/30 text-xl font-bold text-white">
+            Loading audio...
           </div>
         )}
         {status === "error" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 p-4 text-center dark:bg-gray-800">
+          <div className="flex h-full flex-col items-center justify-center bg-gray-50 p-4 text-center dark:bg-gray-800">
             <HiOutlineExclamationCircle
               className="mb-3 h-12 w-12 text-red-500 dark:text-red-400"
               aria-hidden="true"

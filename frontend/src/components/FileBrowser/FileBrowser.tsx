@@ -1,7 +1,7 @@
 import {
   HiOutlineArrowUp,
   HiOutlineDocument,
-  HiOutlineExclamationCircle,
+  HiOutlineExclamation,
   HiOutlineFolder,
   HiOutlineFolderOpen,
 } from "react-icons/hi";
@@ -47,7 +47,7 @@ export default function FileBrowser({
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div className="flex h-full items-center justify-center text-gray-500 dark:text-gray-400">
+        <div className="flex flex-grow flex-col items-center justify-center text-gray-500 dark:text-gray-400">
           <p>Loading...</p>
         </div>
       );
@@ -55,8 +55,8 @@ export default function FileBrowser({
 
     if (isError) {
       return (
-        <div className="flex h-full flex-col items-center justify-center p-4 text-red-700 dark:text-red-400">
-          <HiOutlineExclamationCircle size={48} className="mb-2" />
+        <div className="flex flex-grow flex-col items-center justify-center text-red-700 dark:text-red-400">
+          <HiOutlineExclamation size={48} className="mb-2" />
           <p className="text-center">Error loading directory.</p>
         </div>
       );
@@ -64,7 +64,7 @@ export default function FileBrowser({
 
     if (items.length === 0) {
       return (
-        <div className="flex h-full flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+        <div className="flex flex-grow flex-col items-center justify-center text-gray-500 dark:text-gray-400">
           <HiOutlineFolderOpen size={48} className="mb-2" />
           <p>This directory is empty.</p>
         </div>
@@ -72,7 +72,7 @@ export default function FileBrowser({
     }
 
     return (
-      <ul className="m-0 flex-grow list-none overflow-y-auto p-0">
+      <ul className="m-0 list-none overflow-y-auto p-0">
         {items.map((item) => (
           <li
             key={item.name}
@@ -83,7 +83,7 @@ export default function FileBrowser({
               onClick={() => {
                 handleItemClick(item);
               }}
-              className="flex w-full items-center p-3 text-left hover:bg-gray-100 focus:ring-2 focus:ring-sky-500 focus:outline-none focus:ring-inset dark:hover:bg-gray-700/50"
+              className="flex w-full items-center p-3 hover:bg-gray-100 focus:ring-2 focus:ring-sky-500 focus:outline-none focus:ring-inset dark:hover:bg-gray-700/50"
             >
               <span className="mr-3 text-gray-500 dark:text-gray-400">
                 {item.isDirectory ? (
@@ -117,9 +117,9 @@ export default function FileBrowser({
         }
         endContent={<ThemeSwitcher />}
       >
-        <span className="text-sm text-gray-500 dark:text-gray-400">
-          {currentPath}
-        </span>
+        <h1 className="truncate text-sm text-gray-500 dark:text-gray-400">
+          {"/" + currentPath}
+        </h1>
       </TopBar>
       {renderContent()}
     </div>
