@@ -23,6 +23,7 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/v1/files", app.listFilesHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/audio", app.getAudioFileHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/audio/metadata", app.getAudioMetadataHandler)
 
 	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
 

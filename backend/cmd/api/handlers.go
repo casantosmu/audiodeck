@@ -12,16 +12,6 @@ import (
 	"github.com/maruel/natural"
 )
 
-type FileItem struct {
-	Name  string `json:"name"`
-	IsDir bool   `json:"isDirectory"`
-}
-
-type FileList struct {
-	Path  string     `json:"path"`
-	Items []FileItem `json:"items"`
-}
-
 func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request) {
 	qs := r.URL.Query()
 	path := app.readString(qs, "path", ".")
@@ -129,4 +119,56 @@ func (app *application) getAudioFileHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	http.ServeContent(w, r, info.Name(), info.ModTime(), file)
+}
+
+func (app *application) getAudioMetadataHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Query().Get("path")
+	if path == "" {
+		app.badRequestResponse(w, r, errors.New("path parameter is required"))
+		return
+	}
+
+	file, err := app.mediaRoot.Open(path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			app.notFoundResponse(w, r)
+			return
+		}
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+	defer file.Close()
+
+	info, err := file.Stat()
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+	if info.IsDir() {
+		err := fmt.Errorf("path '%s' is a directory", path)
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	metadata, err := media.GetMetadata(file)
+	if err != nil {
+		if errors.Is(err, media.ErrUnsupportedMediaType) {
+			err := fmt.Errorf("unsupported media type for file: %s", path)
+			app.badRequestResponse(w, r, err)
+			return
+		}
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	response := AudioMetadata{
+		Codec:      metadata.Codec,
+		SampleRate: metadata.SampleRate,
+		Duration:   metadata.Duration,
+	}
+
+	err = app.writeJSON(w, http.StatusOK, response, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
