@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { HiOutlineArrowLeft, HiOutlineExclamationCircle } from "react-icons/hi";
 import WaveSurfer from "wavesurfer.js";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.js";
+import useAudioMetadata from "../../hooks/useAudioMetadata";
+import { formatDuration } from "../../utils/formatDuration";
 import IconButton from "../Button/IconButton";
 import TopBar from "../TopBar/TopBar";
 
@@ -21,10 +23,15 @@ export default function SpectrogramDisplay({
 
   const [status, setStatus] = useState<Status>("idle");
 
-  const fileName = filePath?.split("/").pop();
+  const { data: metadata } = useAudioMetadata(filePath);
 
   useEffect(() => {
-    if (!filePath || !containerRef.current || !wrapperRef.current) {
+    if (
+      !filePath ||
+      !metadata ||
+      !containerRef.current ||
+      !wrapperRef.current
+    ) {
       return;
     }
 
@@ -36,7 +43,7 @@ export default function SpectrogramDisplay({
       container: containerRef.current,
       height: 0,
       url: `/v1/audio?path=${encodeURIComponent(filePath)}`,
-      sampleRate: 44_100,
+      sampleRate: metadata.sampleRate,
       plugins: [
         Spectrogram.create({
           labels: true,
@@ -60,7 +67,7 @@ export default function SpectrogramDisplay({
     return () => {
       ws.destroy();
     };
-  }, [filePath]);
+  }, [filePath, metadata]);
 
   if (!filePath) {
     return (
@@ -69,6 +76,8 @@ export default function SpectrogramDisplay({
       </div>
     );
   }
+
+  const fileName = filePath.split("/").pop();
 
   return (
     <div className="flex h-full flex-col bg-gray-50 dark:bg-gray-800">
@@ -88,6 +97,22 @@ export default function SpectrogramDisplay({
           {fileName}
         </h2>
       </TopBar>
+
+      {metadata && (
+        <div className="flex justify-around border-b border-gray-200 bg-gray-100/50 p-2 text-center text-xs text-gray-600 dark:border-gray-700 dark:bg-gray-900/50 dark:text-gray-400">
+          <div>
+            <span className="font-bold">Codec:</span> {metadata.codec}
+          </div>
+          <div>
+            <span className="font-bold">Sample Rate:</span>{" "}
+            {(metadata.sampleRate / 1000).toFixed(1)} kHz
+          </div>
+          <div>
+            <span className="font-bold">Duration:</span>{" "}
+            {formatDuration(metadata.duration)}
+          </div>
+        </div>
+      )}
 
       <div
         ref={wrapperRef}
