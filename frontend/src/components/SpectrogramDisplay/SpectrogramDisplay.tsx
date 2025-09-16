@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { HiOutlineArrowLeft, HiOutlineExclamationCircle } from "react-icons/hi";
+import { useSearchParams } from "react-router";
 import WaveSurfer from "wavesurfer.js";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.js";
 import useAudioMetadata from "../../hooks/useAudioMetadata";
@@ -7,17 +8,14 @@ import { formatDuration } from "../../utils/formatDuration";
 import IconLink from "../Button/IconLink";
 import TopBar from "../TopBar/TopBar";
 
-interface SpectrogramDisplayProps {
-  filePath: string | null;
-  backUrl: string;
-}
-
 type Status = "idle" | "loading" | "ready" | "error";
 
-export default function SpectrogramDisplay({
-  filePath,
-  backUrl,
-}: SpectrogramDisplayProps) {
+export default function SpectrogramDisplay() {
+  const [searchParams] = useSearchParams();
+  const filePath = searchParams.get("file");
+  const currentPath = searchParams.get("path") ?? "";
+  const backUrl = `?path=${encodeURIComponent(currentPath)}`;
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 

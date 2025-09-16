@@ -5,28 +5,23 @@ import {
   HiOutlineFolder,
   HiOutlineFolderOpen,
 } from "react-icons/hi";
-import type FileItem from "../../core/FileItem";
+import { useSearchParams } from "react-router";
+import useFiles from "../../hooks/useFiles";
 import IconLink from "../Button/IconLink";
 import ThemeSwitcher from "../ThemeSwitcher/ThemeSwitcher";
 import TopBar from "../TopBar/TopBar";
-
-interface FileBrowserProps {
-  currentPath: string;
-  items: FileItem[];
-  isLoading: boolean;
-  isError: boolean;
-}
 
 const createItemPath = (basePath: string, itemName: string) => {
   return basePath ? `${basePath}/${itemName}` : itemName;
 };
 
-export default function FileBrowser({
-  currentPath,
-  items,
-  isLoading,
-  isError,
-}: FileBrowserProps) {
+export default function FileBrowser() {
+  const [searchParams] = useSearchParams();
+  const currentPath = searchParams.get("path") ?? "";
+
+  const { data, isLoading, isError } = useFiles(currentPath);
+  const items = data?.items ?? [];
+
   const parentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
 
   const renderContent = () => {
