@@ -12,9 +12,15 @@ import (
 	"github.com/maruel/natural"
 )
 
+var (
+	ErrPathParamRequired = errors.New("path parameter is required")
+)
+
 func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request) {
-	qs := r.URL.Query()
-	path := app.readString(qs, "path", ".")
+	path := r.URL.Query().Get("path")
+	if path == "" {
+		path = "."
+	}
 
 	dir, err := app.mediaRoot.Open(path)
 	if err != nil {
@@ -72,7 +78,7 @@ func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request)
 		Items: items,
 	}
 
-	err = app.writeJSON(w, http.StatusOK, response, nil)
+	err = app.writeJSON(w, http.StatusOK, response)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -81,7 +87,7 @@ func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request)
 func (app *application) getAudioFileHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	if path == "" {
-		app.badRequestResponse(w, r, errors.New("path parameter is required"))
+		app.badRequestResponse(w, r, ErrPathParamRequired)
 		return
 	}
 
@@ -124,7 +130,7 @@ func (app *application) getAudioFileHandler(w http.ResponseWriter, r *http.Reque
 func (app *application) getAudioMetadataHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Query().Get("path")
 	if path == "" {
-		app.badRequestResponse(w, r, errors.New("path parameter is required"))
+		app.badRequestResponse(w, r, ErrPathParamRequired)
 		return
 	}
 
@@ -167,7 +173,7 @@ func (app *application) getAudioMetadataHandler(w http.ResponseWriter, r *http.R
 		Duration:   metadata.Duration,
 	}
 
-	err = app.writeJSON(w, http.StatusOK, response, nil)
+	err = app.writeJSON(w, http.StatusOK, response)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
