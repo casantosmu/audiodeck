@@ -4,31 +4,14 @@ import SpectrogramDisplay from "./components/SpectrogramDisplay/SpectrogramDispl
 import useFiles from "./hooks/useFiles";
 
 export default function App() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const currentPath = searchParams.get("path") ?? "";
   const selectedFile = searchParams.get("file");
 
   const { data, isLoading, isError } = useFiles(currentPath);
 
-  const handleDirectoryChange = (newPath: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("path", newPath);
-    newParams.delete("file");
-    setSearchParams(newParams);
-  };
-
-  const handleFileSelect = (filePath: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("file", filePath);
-    setSearchParams(newParams);
-  };
-
-  const handleClearFile = () => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.delete("file");
-    setSearchParams(newParams);
-  };
+  const backUrl = `?path=${encodeURIComponent(currentPath)}`;
 
   return (
     <div className="h-dvh bg-white text-gray-900 lg:flex dark:bg-gray-900 dark:text-gray-100">
@@ -42,17 +25,12 @@ export default function App() {
           items={data?.items ?? []}
           isLoading={isLoading}
           isError={isError}
-          onDirectoryChange={handleDirectoryChange}
-          onFileSelect={handleFileSelect}
         />
       </div>
       <div
         className={`${selectedFile ? "block" : "hidden"} h-full grow lg:block`}
       >
-        <SpectrogramDisplay
-          filePath={selectedFile}
-          onClearFile={handleClearFile}
-        />
+        <SpectrogramDisplay filePath={selectedFile} backUrl={backUrl} />
       </div>
     </div>
   );

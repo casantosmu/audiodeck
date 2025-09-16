@@ -4,19 +4,19 @@ import WaveSurfer from "wavesurfer.js";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.js";
 import useAudioMetadata from "../../hooks/useAudioMetadata";
 import { formatDuration } from "../../utils/formatDuration";
-import IconButton from "../Button/IconButton";
+import IconLink from "../Button/IconLink";
 import TopBar from "../TopBar/TopBar";
 
 interface SpectrogramDisplayProps {
   filePath: string | null;
-  onClearFile: () => void;
+  backUrl: string;
 }
 
 type Status = "idle" | "loading" | "ready" | "error";
 
 export default function SpectrogramDisplay({
   filePath,
-  onClearFile,
+  backUrl,
 }: SpectrogramDisplayProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -83,14 +83,13 @@ export default function SpectrogramDisplay({
     <div className="flex h-full flex-col bg-gray-50 dark:bg-gray-800">
       <TopBar
         startContent={
-          <IconButton
-            type="button"
-            onClick={onClearFile}
+          <IconLink
+            to={backUrl}
             aria-label="Go back to file list"
             className="lg:hidden"
           >
             <HiOutlineArrowLeft size={18} />
-          </IconButton>
+          </IconLink>
         }
       >
         <h2 className="truncate text-lg font-semibold text-sky-700 dark:text-sky-400">

@@ -6,7 +6,7 @@ import {
   HiOutlineFolderOpen,
 } from "react-icons/hi";
 import type FileItem from "../../core/FileItem";
-import IconButton from "../Button/IconButton";
+import IconLink from "../Button/IconLink";
 import ThemeSwitcher from "../ThemeSwitcher/ThemeSwitcher";
 import TopBar from "../TopBar/TopBar";
 
@@ -15,34 +15,19 @@ interface FileBrowserProps {
   items: FileItem[];
   isLoading: boolean;
   isError: boolean;
-  onFileSelect: (path: string) => void;
-  onDirectoryChange: (path: string) => void;
 }
+
+const createItemPath = (basePath: string, itemName: string) => {
+  return basePath ? `${basePath}/${itemName}` : itemName;
+};
 
 export default function FileBrowser({
   currentPath,
   items,
   isLoading,
   isError,
-  onFileSelect,
-  onDirectoryChange,
 }: FileBrowserProps) {
-  const handleUpDirectory = () => {
-    if (!currentPath) {
-      return;
-    }
-    const parentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
-    onDirectoryChange(parentPath);
-  };
-
-  const handleItemClick = (item: FileItem) => {
-    const newPath = currentPath ? `${currentPath}/${item.name}` : item.name;
-    if (item.isDirectory) {
-      onDirectoryChange(newPath);
-    } else {
-      onFileSelect(newPath);
-    }
-  };
+  const parentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
 
   const renderContent = () => {
     if (isLoading) {
@@ -73,31 +58,35 @@ export default function FileBrowser({
 
     return (
       <ul className="m-0 list-none overflow-y-auto p-0">
-        {items.map((item) => (
-          <li
-            key={item.name}
-            className="border-b border-gray-200 dark:border-gray-900"
-          >
-            <button
-              type="button"
-              onClick={() => {
-                handleItemClick(item);
-              }}
-              className="flex w-full items-center p-3 hover:bg-gray-100 focus:ring-2 focus:ring-sky-500 focus:outline-none focus:ring-inset dark:hover:bg-gray-700/50"
+        {items.map((item) => {
+          const itemFullPath = createItemPath(currentPath, item.name);
+          const to = item.isDirectory
+            ? `?path=${encodeURIComponent(itemFullPath)}`
+            : `?path=${encodeURIComponent(currentPath)}&file=${encodeURIComponent(itemFullPath)}`;
+
+          return (
+            <li
+              key={item.name}
+              className="border-b border-gray-200 dark:border-gray-900"
             >
-              <span className="mr-3 text-gray-500 dark:text-gray-400">
-                {item.isDirectory ? (
-                  <HiOutlineFolder size={20} aria-hidden="true" />
-                ) : (
-                  <HiOutlineDocument size={20} aria-hidden="true" />
-                )}
-              </span>
-              <span className="truncate text-gray-900 dark:text-gray-200">
-                {item.name}
-              </span>
-            </button>
-          </li>
-        ))}
+              <IconLink
+                to={to}
+                className="flex w-full items-center rounded-none border-none p-3 hover:bg-gray-100 focus:ring-inset dark:hover:bg-gray-700/50"
+              >
+                <span className="mr-3 text-gray-500 dark:text-gray-400">
+                  {item.isDirectory ? (
+                    <HiOutlineFolder size={20} aria-hidden="true" />
+                  ) : (
+                    <HiOutlineDocument size={20} aria-hidden="true" />
+                  )}
+                </span>
+                <span className="truncate text-gray-900 dark:text-gray-200">
+                  {item.name}
+                </span>
+              </IconLink>
+            </li>
+          );
+        })}
       </ul>
     );
   };
@@ -106,14 +95,14 @@ export default function FileBrowser({
     <div className="flex h-full flex-col bg-gray-50 dark:bg-gray-800">
       <TopBar
         startContent={
-          <IconButton
-            type="button"
-            onClick={handleUpDirectory}
-            disabled={!currentPath}
+          <IconLink
+            to={`?path=${encodeURIComponent(parentPath)}`}
+            aria-disabled={!currentPath}
+            className={!currentPath ? "pointer-events-none" : ""}
             aria-label="Go up one directory"
           >
             <HiOutlineArrowUp size={18} />
-          </IconButton>
+          </IconLink>
         }
         endContent={<ThemeSwitcher />}
       >
