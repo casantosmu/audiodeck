@@ -7,6 +7,7 @@ import {
 } from "react-icons/hi";
 import { useSearchParams } from "react-router";
 import useFiles from "../../hooks/useFiles";
+import IconButton from "../Button/IconButton";
 import IconLink from "../Button/IconLink";
 import ThemeSwitcher from "../ThemeSwitcher/ThemeSwitcher";
 import TopBar from "../TopBar/TopBar";
@@ -90,14 +91,18 @@ export default function FileBrowser() {
     <div className="flex h-full flex-col bg-gray-50 dark:bg-gray-800">
       <TopBar
         startContent={
-          <IconLink
-            to={`?path=${encodeURIComponent(parentPath)}`}
-            aria-disabled={!currentPath}
-            className={!currentPath ? "pointer-events-none" : ""}
-            aria-label="Go up one directory"
-          >
-            <HiOutlineArrowUp size={18} />
-          </IconLink>
+          currentPath ? (
+            <IconLink
+              to={`?path=${encodeURIComponent(parentPath)}`}
+              aria-label="Go up one directory"
+            >
+              <HiOutlineArrowUp size={18} />
+            </IconLink>
+          ) : (
+            <IconButton disabled aria-label="Go up one directory">
+              <HiOutlineArrowUp size={18} />
+            </IconButton>
+          )
         }
         endContent={<ThemeSwitcher />}
       >
