@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 )
 
 type config struct {
@@ -51,12 +50,9 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", cfg.port),
-		Handler:      app.routes(),
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelError),
+		Addr:     fmt.Sprintf(":%d", cfg.port),
+		Handler:  app.routes(),
+		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
 	}
 
 	logger.Info("starting server", "addr", srv.Addr, "path", cfg.mediaDir)
