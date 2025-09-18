@@ -19,7 +19,7 @@ export default function App() {
       <div
         className={`${selectedFile ? "block" : "hidden"} h-full grow lg:block`}
       >
-        <SpectrogramDisplay />
+        <SpectrogramDisplay key={selectedFile} />
       </div>
 
       <Toaster />
