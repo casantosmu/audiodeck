@@ -11,15 +11,15 @@ import (
 //go:embed ui/*
 var uiFiles embed.FS
 
-func (app *application) routes() http.Handler {
+func (app *application) routes() (http.Handler, error) {
 	uiFS, err := fs.Sub(uiFiles, "ui")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	router := httprouter.New()
 
-	router.NotFound = http.Handler(http.FileServerFS(uiFS))
+	router.NotFound = http.FileServerFS(uiFS)
 
 	router.HandlerFunc(http.MethodGet, "/v1/files", app.listFilesHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/audio", app.getAudioFileHandler)
@@ -27,5 +27,5 @@ func (app *application) routes() http.Handler {
 
 	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
 
-	return app.recoverPanic(router)
+	return app.recoverPanic(router), nil
 }

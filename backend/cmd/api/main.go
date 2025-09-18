@@ -49,9 +49,15 @@ func main() {
 		mediaRoot: root,
 	}
 
+	handler, err := app.routes()
+	if err != nil {
+		logger.Error("could not create routes", "error", err)
+		os.Exit(1)
+	}
+
 	srv := &http.Server{
 		Addr:     fmt.Sprintf(":%d", cfg.port),
-		Handler:  app.routes(),
+		Handler:  handler,
 		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
 	}
 
