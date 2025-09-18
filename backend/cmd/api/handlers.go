@@ -78,7 +78,7 @@ func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request)
 		Items: items,
 	}
 
-	err = app.writeJSON(w, http.StatusOK, response)
+	err = writeJSON(w, http.StatusOK, response)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
@@ -173,7 +173,7 @@ func (app *application) getAudioMetadataHandler(w http.ResponseWriter, r *http.R
 		Duration:   metadata.Duration,
 	}
 
-	err = app.writeJSON(w, http.StatusOK, response)
+	err = writeJSON(w, http.StatusOK, response)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

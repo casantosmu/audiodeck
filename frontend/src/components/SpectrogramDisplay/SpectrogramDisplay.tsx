@@ -11,14 +11,14 @@ import TopBar from "../TopBar/TopBar";
 
 type Status = "idle" | "loading" | "ready" | "error";
 
-const TOAST_ID = "SLOW_LOAD_TOAST";
+const SLOW_LOAD_TOAST_ID = "SLOW_LOAD_TOAST";
 const SLOW_LOAD_THRESHOLD_MS = 15_000;
 
 const showToast = () => {
   toast.loading(
     "Loading is taking a while due to a large file or slow connection...",
     {
-      id: TOAST_ID,
+      id: SLOW_LOAD_TOAST_ID,
       duration: Infinity,
       position: "bottom-right",
     },
@@ -26,14 +26,13 @@ const showToast = () => {
 };
 
 const dismissToast = () => {
-  toast.dismiss(TOAST_ID);
+  toast.dismiss(SLOW_LOAD_TOAST_ID);
 };
 
 export default function SpectrogramDisplay() {
   const [searchParams] = useSearchParams();
   const filePath = searchParams.get("file");
   const currentPath = searchParams.get("path") ?? "";
-  const backUrl = `?path=${encodeURIComponent(currentPath)}`;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -104,7 +103,7 @@ export default function SpectrogramDisplay() {
       <TopBar
         startContent={
           <IconLink
-            to={backUrl}
+            to={`?path=${encodeURIComponent(currentPath)}`}
             aria-label="Go back to file list"
             className="lg:hidden"
           >

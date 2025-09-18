@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (app *application) writeJSON(w http.ResponseWriter, status int, data any) error {
+func writeJSON(w http.ResponseWriter, status int, data any) error {
 	js, err := json.Marshal(data)
 	if err != nil {
 		return err
