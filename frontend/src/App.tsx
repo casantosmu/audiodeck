@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { useSearchParams } from "react-router";
 import FileBrowser from "./components/FileBrowser/FileBrowser";
 import SpectrogramDisplay from "./components/SpectrogramDisplay/SpectrogramDisplay";
@@ -20,6 +21,8 @@ export default function App() {
       >
         <SpectrogramDisplay />
       </div>
+
+      <Toaster />
     </div>
   );
 }

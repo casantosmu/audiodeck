@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { HiOutlineArrowLeft, HiOutlineExclamationCircle } from "react-icons/hi";
 import { useSearchParams } from "react-router";
 import WaveSurfer from "wavesurfer.js";
@@ -9,6 +10,24 @@ import IconLink from "../Button/IconLink";
 import TopBar from "../TopBar/TopBar";
 
 type Status = "idle" | "loading" | "ready" | "error";
+
+const TOAST_ID = "SLOW_LOAD_TOAST";
+const SLOW_LOAD_THRESHOLD_MS = 15_000;
+
+const showToast = () => {
+  toast.loading(
+    "Loading is taking a while due to a large file or slow connection...",
+    {
+      id: TOAST_ID,
+      duration: Infinity,
+      position: "bottom-right",
+    },
+  );
+};
+
+const dismissToast = () => {
+  toast.dismiss(TOAST_ID);
+};
 
 export default function SpectrogramDisplay() {
   const [searchParams] = useSearchParams();
@@ -35,6 +54,8 @@ export default function SpectrogramDisplay() {
 
     setStatus("loading");
 
+    const slowLoadTimer = setTimeout(showToast, SLOW_LOAD_THRESHOLD_MS);
+
     const calculatedHeight = wrapperRef.current.clientHeight;
 
     const ws = WaveSurfer.create({
@@ -54,15 +75,16 @@ export default function SpectrogramDisplay() {
 
     ws.on("ready", () => {
       setStatus("ready");
+      dismissToast();
     });
     ws.on("error", () => {
       setStatus("error");
-    });
-    ws.on("loading", () => {
-      setStatus("loading");
+      dismissToast();
     });
 
     return () => {
+      clearTimeout(slowLoadTimer);
+      dismissToast();
       ws.destroy();
     };
   }, [filePath, metadata]);
