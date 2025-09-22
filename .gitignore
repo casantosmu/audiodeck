@@ -1,5 +1,5 @@
 # Local dependencies and build output
-backend/bin/
+backend/bin
 frontend/node_modules
 frontend/dist
 frontend/dist-ssr

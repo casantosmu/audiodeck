@@ -6,8 +6,13 @@
 Dockerfile
 .dockerignore
 
+# Documentation
+README.md
+LICENSE
+.github/
+
 # Local dependencies and build output
-backend/bin/
+backend/bin
 frontend/node_modules
 frontend/dist
 frontend/dist-ssr
