@@ -21,7 +21,7 @@ type application struct {
 func main() {
 	var cfg config
 
-	flag.IntVar(&cfg.port, "port", 4000, "Server port")
+	flag.IntVar(&cfg.port, "port", 4747, "Server port")
 	flag.StringVar(&cfg.mediaDir, "media-dir", "/", "Root directory for media files")
 	flag.Parse()
 

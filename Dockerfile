@@ -29,6 +29,6 @@ RUN apk add --no-cache tzdata
 
 COPY --from=backend /app ./
 
-EXPOSE 4000
+EXPOSE 4747
 
-CMD ["./bin/audiodeck", "-port", "4000", "-media-dir", "/media"]
+CMD ["./bin/audiodeck", "-port", "4747", "-media-dir", "/media"]
