@@ -25,10 +25,6 @@ const showToast = () => {
   );
 };
 
-const dismissToast = () => {
-  toast.dismiss(SLOW_LOAD_TOAST_ID);
-};
-
 export default function SpectrogramDisplay() {
   const [searchParams] = useSearchParams();
   const filePath = searchParams.get("file");
@@ -72,6 +68,11 @@ export default function SpectrogramDisplay() {
       ],
     });
 
+    const dismissToast = () => {
+      clearTimeout(slowLoadTimer);
+      toast.dismiss(SLOW_LOAD_TOAST_ID);
+    };
+
     ws.on("ready", () => {
       setStatus("ready");
       dismissToast();
@@ -82,7 +83,6 @@ export default function SpectrogramDisplay() {
     });
 
     return () => {
-      clearTimeout(slowLoadTimer);
       dismissToast();
       ws.destroy();
     };
