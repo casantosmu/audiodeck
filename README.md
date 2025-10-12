@@ -36,7 +36,7 @@ Create a `docker-compose.yaml` file:
 ```yaml
 services:
   audiodeck:
-    image: casantosmu/audiodeck:1.0.0
+    image: casantosmu/audiodeck
     container_name: audiodeck
     user: "1000:1000"
     restart: unless-stopped

@@ -2,10 +2,18 @@ import { type PropsWithChildren, useEffect, useMemo, useState } from "react";
 import ThemeContext from "./ThemeContext";
 import type { Theme } from "./types";
 
+const LOCAL_STORAGE_KEY = "theme";
+
+const getInitialTheme = (): Theme => {
+  const storedTheme = localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (storedTheme === "light" || storedTheme === "dark") {
+    return storedTheme;
+  }
+  return "dark";
+};
+
 export default function ThemeProvider({ children }: PropsWithChildren) {
-  const [theme, setTheme] = useState(
-    () => (localStorage.getItem("theme") as Theme | null | undefined) ?? "dark",
-  );
+  const [theme, setTheme] = useState(getInitialTheme);
 
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
@@ -15,7 +23,7 @@ export default function ThemeProvider({ children }: PropsWithChildren) {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
-    localStorage.setItem("theme", theme);
+    localStorage.setItem(LOCAL_STORAGE_KEY, theme);
   }, [theme]);
 
   const value = useMemo(() => ({ theme, toggleTheme }), [theme]);

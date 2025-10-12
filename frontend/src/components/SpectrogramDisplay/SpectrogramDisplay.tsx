@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router";
 import WaveSurfer from "wavesurfer.js";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.js";
 import useAudioMetadata from "../../hooks/useAudioMetadata";
+import useSpectrogramScale from "../../hooks/useSpectrogramScale";
 import { formatDuration } from "../../utils/formatDuration";
 import IconLink from "../Button/IconLink";
 import TopBar from "../TopBar/TopBar";
@@ -36,6 +37,7 @@ export default function SpectrogramDisplay() {
   const [status, setStatus] = useState<Status>("idle");
 
   const { data: metadata } = useAudioMetadata(filePath);
+  const { scale, toggleScale } = useSpectrogramScale();
 
   useEffect(() => {
     if (
@@ -50,7 +52,6 @@ export default function SpectrogramDisplay() {
     setStatus("loading");
 
     const slowLoadTimer = setTimeout(showToast, SLOW_LOAD_THRESHOLD_MS);
-
     const calculatedHeight = wrapperRef.current.clientHeight;
 
     const ws = WaveSurfer.create({
@@ -61,9 +62,9 @@ export default function SpectrogramDisplay() {
       plugins: [
         Spectrogram.create({
           labels: true,
-          height: calculatedHeight > 0 ? calculatedHeight : 256,
+          height: calculatedHeight,
           useWebWorker: true,
-          scale: "linear",
+          scale,
         }),
       ],
     });
@@ -77,7 +78,10 @@ export default function SpectrogramDisplay() {
       setStatus("ready");
       dismissToast();
     });
-    ws.on("error", () => {
+    ws.on("error", (error) => {
+      if (error.name === "AbortError") {
+        return;
+      }
       setStatus("error");
       dismissToast();
     });
@@ -86,7 +90,7 @@ export default function SpectrogramDisplay() {
       dismissToast();
       ws.destroy();
     };
-  }, [filePath, metadata]);
+  }, [filePath, metadata, scale]);
 
   if (!filePath) {
     return (
@@ -134,8 +138,18 @@ export default function SpectrogramDisplay() {
 
       <div
         ref={wrapperRef}
-        className="m-2 flex-grow overflow-hidden rounded-lg"
+        className="relative m-2 flex-grow overflow-hidden rounded-lg"
       >
+        <div className="absolute top-2 right-2 z-10">
+          <button
+            type="button"
+            onClick={toggleScale}
+            className="rounded-full bg-black/30 px-2.5 py-1 text-xs font-semibold text-white transition-colors hover:bg-black/50 focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none"
+            aria-label={`Switch to ${scale === "linear" ? "logarithmic" : "linear"} scale`}
+          >
+            {scale === "linear" ? "LIN" : "LOG"}
+          </button>
+        </div>
         <div
           ref={containerRef}
           className={`h-full overflow-x-auto bg-gray-100 dark:bg-black ${status === "ready" ? "block" : "hidden"}`}
