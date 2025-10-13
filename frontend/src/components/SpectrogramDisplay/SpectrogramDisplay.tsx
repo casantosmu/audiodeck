@@ -54,19 +54,19 @@ export default function SpectrogramDisplay() {
     const slowLoadTimer = setTimeout(showToast, SLOW_LOAD_THRESHOLD_MS);
     const calculatedHeight = wrapperRef.current.clientHeight;
 
-    const ws = WaveSurfer.create({
+    const spectrogramPlugin = Spectrogram.create({
+      labels: true,
+      height: calculatedHeight,
+      useWebWorker: true,
+      scale,
+    });
+
+    const waveSurfer = WaveSurfer.create({
       container: containerRef.current,
       height: 0,
       url: `/v1/audio?path=${encodeURIComponent(filePath)}`,
       sampleRate: metadata.sampleRate,
-      plugins: [
-        Spectrogram.create({
-          labels: true,
-          height: calculatedHeight,
-          useWebWorker: true,
-          scale,
-        }),
-      ],
+      plugins: [spectrogramPlugin],
     });
 
     const dismissToast = () => {
@@ -74,11 +74,12 @@ export default function SpectrogramDisplay() {
       toast.dismiss(SLOW_LOAD_TOAST_ID);
     };
 
-    ws.on("ready", () => {
+    spectrogramPlugin.on("ready", () => {
       setStatus("ready");
       dismissToast();
     });
-    ws.on("error", (error) => {
+
+    waveSurfer.on("error", (error) => {
       if (error.name === "AbortError") {
         return;
       }
@@ -88,7 +89,7 @@ export default function SpectrogramDisplay() {
 
     return () => {
       dismissToast();
-      ws.destroy();
+      waveSurfer.destroy();
     };
   }, [filePath, metadata, scale]);
 
@@ -152,16 +153,16 @@ export default function SpectrogramDisplay() {
         </div>
         <div
           ref={containerRef}
-          className={`h-full overflow-x-auto bg-gray-100 dark:bg-black ${status === "ready" ? "block" : "hidden"}`}
+          className={`h-full overflow-x-auto bg-gray-100 transition-opacity dark:bg-black ${status === "ready" ? "opacity-100" : "opacity-0"}`}
           aria-label="Spectrogram"
         ></div>
         {status === "loading" && (
-          <div className="flex h-full flex-col items-center justify-center bg-gray-500/30 text-xl font-bold text-white">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-500/30 text-xl font-bold text-white">
             Loading audio...
           </div>
         )}
         {status === "error" && (
-          <div className="flex h-full flex-col items-center justify-center bg-gray-50 p-4 text-center dark:bg-gray-800">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 p-4 text-center dark:bg-gray-800">
             <HiOutlineExclamationCircle
               className="mb-3 h-12 w-12 text-red-500 dark:text-red-400"
               aria-hidden="true"
