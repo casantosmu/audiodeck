@@ -25,7 +25,12 @@ export default function SpectrogramDisplay() {
   const [status, setStatus] = useState<Status>("idle");
   const [isSlowLoad, setIsSlowLoad] = useState(false);
 
-  const { data: metadata } = useAudioMetadata(filePath);
+  const {
+    data: metadata,
+    isError: isMetadataError,
+    error: metadataError,
+  } = useAudioMetadata(filePath);
+
   const { scale, toggleScale } = useSpectrogramScale();
 
   useEffect(() => {
@@ -133,14 +138,16 @@ export default function SpectrogramDisplay() {
         className="relative m-2 flex-grow overflow-hidden rounded-lg"
       >
         <div className="absolute top-2 right-2 z-10">
-          <button
-            type="button"
-            onClick={toggleScale}
-            className="rounded-full bg-black/30 px-2.5 py-1 text-xs font-semibold text-white transition-colors hover:bg-black/50 focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none"
-            aria-label={`Switch to ${scale === "linear" ? "logarithmic" : "linear"} scale`}
-          >
-            {scale === "linear" ? "LIN" : "LOG"}
-          </button>
+          {status !== "idle" && (
+            <button
+              type="button"
+              onClick={toggleScale}
+              className="rounded-full bg-black/30 px-2.5 py-1 text-xs font-semibold text-white transition-colors hover:bg-black/50 focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none"
+              aria-label={`Switch to ${scale === "linear" ? "logarithmic" : "linear"} scale`}
+            >
+              {scale === "linear" ? "LIN" : "LOG"}
+            </button>
+          )}
         </div>
         <div
           ref={containerRef}
@@ -169,17 +176,21 @@ export default function SpectrogramDisplay() {
             )}
           </div>
         )}
-        {status === "error" && (
+        {(status === "error" || isMetadataError) && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 p-4 text-center dark:bg-gray-800">
             <HiOutlineExclamationCircle
               className="mb-3 h-12 w-12 text-red-500 dark:text-red-400"
               aria-hidden="true"
             />
             <p className="text-lg font-semibold text-red-700 dark:text-red-300">
-              Error Loading Audio File
+              {isMetadataError
+                ? "Error Loading Metadata"
+                : "Error Loading Audio File"}
             </p>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              The file may be corrupt or in an unsupported format.
+              {isMetadataError
+                ? metadataError.message
+                : "The file may be corrupt or in an unsupported format."}
             </p>
           </div>
         )}
