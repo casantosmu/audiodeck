@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import { CgSpinner } from "react-icons/cg";
 import { HiOutlineArrowLeft, HiOutlineExclamationCircle } from "react-icons/hi";
 import { useSearchParams } from "react-router";
 import WaveSurfer from "wavesurfer.js";
@@ -12,19 +12,7 @@ import TopBar from "../TopBar/TopBar";
 
 type Status = "idle" | "loading" | "ready" | "error";
 
-const SLOW_LOAD_TOAST_ID = "SLOW_LOAD_TOAST";
 const SLOW_LOAD_THRESHOLD_MS = 15_000;
-
-const showToast = () => {
-  toast.loading(
-    "Loading is taking a while due to a large file or slow connection...",
-    {
-      id: SLOW_LOAD_TOAST_ID,
-      duration: Infinity,
-      position: "bottom-right",
-    },
-  );
-};
 
 export default function SpectrogramDisplay() {
   const [searchParams] = useSearchParams();
@@ -35,6 +23,7 @@ export default function SpectrogramDisplay() {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const [status, setStatus] = useState<Status>("idle");
+  const [isSlowLoad, setIsSlowLoad] = useState(false);
 
   const { data: metadata } = useAudioMetadata(filePath);
   const { scale, toggleScale } = useSpectrogramScale();
@@ -50,8 +39,12 @@ export default function SpectrogramDisplay() {
     }
 
     setStatus("loading");
+    setIsSlowLoad(false);
 
-    const slowLoadTimer = setTimeout(showToast, SLOW_LOAD_THRESHOLD_MS);
+    const slowLoadTimer = setTimeout(() => {
+      setIsSlowLoad(true);
+    }, SLOW_LOAD_THRESHOLD_MS);
+
     const calculatedHeight = wrapperRef.current.clientHeight;
 
     const spectrogramPlugin = Spectrogram.create({
@@ -69,26 +62,22 @@ export default function SpectrogramDisplay() {
       plugins: [spectrogramPlugin],
     });
 
-    const dismissToast = () => {
-      clearTimeout(slowLoadTimer);
-      toast.dismiss(SLOW_LOAD_TOAST_ID);
-    };
-
     spectrogramPlugin.on("ready", () => {
       setStatus("ready");
-      dismissToast();
+      clearTimeout(slowLoadTimer);
     });
 
     waveSurfer.on("error", (error) => {
+      // This error is triggered on component unmount, we can safely ignore it.
       if (error.name === "AbortError") {
         return;
       }
       setStatus("error");
-      dismissToast();
+      clearTimeout(slowLoadTimer);
     });
 
     return () => {
-      dismissToast();
+      clearTimeout(slowLoadTimer);
       waveSurfer.destroy();
     };
   }, [filePath, metadata, scale]);
@@ -157,8 +146,25 @@ export default function SpectrogramDisplay() {
           aria-label="Spectrogram"
         ></div>
         {status === "loading" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-500/30 text-xl font-bold text-white">
-            Loading audio...
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 p-4 text-center dark:bg-gray-800">
+            <CgSpinner
+              className="mb-4 h-8 w-8 animate-spin text-sky-500 dark:text-sky-400"
+              aria-hidden="true"
+            />
+            <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+              Generating spectrogram...
+            </p>
+            {scale === "logarithmic" && (
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                Logarithmic scale can take a bit longer.
+              </p>
+            )}
+            {isSlowLoad && (
+              <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
+                Loading is taking a while due to a large file or slow
+                connection...
+              </p>
+            )}
           </div>
         )}
         {status === "error" && (
