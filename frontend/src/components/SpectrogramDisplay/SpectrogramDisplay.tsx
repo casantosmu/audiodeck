@@ -60,6 +60,8 @@ export default function SpectrogramDisplay() {
       url: `/v1/audio?path=${encodeURIComponent(filePath)}`,
       sampleRate: metadata.sampleRate,
       plugins: [spectrogramPlugin],
+      interact: false,
+      autoplay: false,
     });
 
     spectrogramPlugin.on("ready", () => {
