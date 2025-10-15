@@ -1,8 +1,9 @@
 package main
 
 type FileItem struct {
-	Name  string `json:"name"`
-	IsDir bool   `json:"isDirectory"`
+	Name        string `json:"name"`
+	IsDir       bool   `json:"isDirectory"`
+	IsSupported bool   `json:"isSupported"`
 }
 
 type FileList struct {

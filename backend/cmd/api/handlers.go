@@ -52,15 +52,18 @@ func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request)
 
 	items := make([]FileItem, 0, len(entries))
 	for _, entry := range entries {
+		name := entry.Name()
 		if entry.IsDir() {
 			items = append(items, FileItem{
-				Name:  entry.Name(),
-				IsDir: true,
+				Name:        name,
+				IsDir:       true,
+				IsSupported: true,
 			})
-		} else if media.IsSupportedExtension(entry.Name()) {
+		} else if media.IsAudioExtension(name) {
 			items = append(items, FileItem{
-				Name:  entry.Name(),
-				IsDir: false,
+				Name:        name,
+				IsDir:       false,
+				IsSupported: media.IsSupportedExtension(name),
 			})
 		}
 	}
@@ -69,6 +72,9 @@ func (app *application) listFilesHandler(w http.ResponseWriter, r *http.Request)
 		a, b := items[i], items[j]
 		if a.IsDir != b.IsDir {
 			return a.IsDir
+		}
+		if a.IsSupported != b.IsSupported {
+			return a.IsSupported
 		}
 		return natural.Less(strings.ToLower(a.Name), strings.ToLower(b.Name))
 	})

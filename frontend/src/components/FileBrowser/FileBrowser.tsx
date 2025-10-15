@@ -2,6 +2,7 @@ import {
   HiOutlineArrowUp,
   HiOutlineDocument,
   HiOutlineExclamation,
+  HiOutlineExclamationCircle,
   HiOutlineFolder,
   HiOutlineFolderOpen,
 } from "react-icons/hi";
@@ -55,6 +56,22 @@ export default function FileBrowser() {
     return (
       <ul className="m-0 list-none overflow-y-auto p-0">
         {items.map((item) => {
+          if (!item.isSupported) {
+            return (
+              <li
+                key={item.name}
+                className="border-b border-gray-200 dark:border-gray-900"
+              >
+                <div className="flex w-full cursor-not-allowed items-center p-3 text-gray-400 dark:text-gray-600">
+                  <span className="mr-3">
+                    <HiOutlineExclamationCircle size={20} aria-hidden="true" />
+                  </span>
+                  <span className="truncate">{item.name}</span>
+                </div>
+              </li>
+            );
+          }
+
           const itemFullPath = createItemPath(currentPath, item.name);
           const to = item.isDirectory
             ? `?path=${encodeURIComponent(itemFullPath)}`

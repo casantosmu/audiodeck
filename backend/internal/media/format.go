@@ -3,6 +3,7 @@ package media
 import (
 	"errors"
 	"io"
+	"mime"
 	"path/filepath"
 	"strings"
 
@@ -34,6 +35,12 @@ func IsSupportedExtension(name string) bool {
 	ext := strings.ToLower(filepath.Ext(name))
 	_, ok := supportedExtensions[ext]
 	return ok
+}
+
+func IsAudioExtension(name string) bool {
+	ext := filepath.Ext(name)
+	mimeType := mime.TypeByExtension(ext)
+	return strings.HasPrefix(mimeType, "audio/")
 }
 
 func DetectType(rs io.ReadSeeker) (Type, error) {
