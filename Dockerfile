@@ -25,7 +25,7 @@ RUN go build -ldflags='-s' -o ./bin/audiodeck ./cmd/api
 FROM alpine:3.22
 WORKDIR /app
 
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache tzdata mailcap
 
 COPY --from=backend /app ./
 
