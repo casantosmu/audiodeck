@@ -27,7 +27,7 @@ WORKDIR /app
 
 RUN apk add --no-cache tzdata mailcap
 
-COPY --from=backend /app ./
+COPY --from=backend /app/bin/audiodeck ./bin/audiodeck
 
 EXPOSE 4747
 

@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
 - The spectrogram is no longer interactive and will not automatically play upon loading.
 - Displays a specific error message when audio metadata fails to load.
 
+### Changed
+
+- Optimized Dockerfile to reduce final image size by only copying the compiled binary.
+
 ## [1.1.0] - 2025-10-12
 
 ### Added
