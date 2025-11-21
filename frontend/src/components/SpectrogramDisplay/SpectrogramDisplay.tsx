@@ -5,7 +5,8 @@ import { useSearchParams } from "react-router";
 import WaveSurfer from "wavesurfer.js";
 import Spectrogram from "wavesurfer.js/dist/plugins/spectrogram.js";
 import useAudioMetadata from "../../hooks/useAudioMetadata";
-import useSpectrogramScale from "../../hooks/useSpectrogramScale";
+import useFeatures from "../../hooks/useFeatures";
+import useScaleToggle from "../../hooks/useScaleToggle";
 import { formatDuration } from "../../utils/formatDuration";
 import IconLink from "../Button/IconLink";
 import TopBar from "../TopBar/TopBar";
@@ -31,14 +32,16 @@ export default function SpectrogramDisplay() {
     error: metadataError,
   } = useAudioMetadata(filePath);
 
-  const { scale, toggleScale } = useSpectrogramScale();
+  const { data: features, isLoading: isFeaturesLoading } = useFeatures();
+  const { scale, ToggleButton } = useScaleToggle(features);
 
   useEffect(() => {
     if (
       !filePath ||
       !metadata ||
       !containerRef.current ||
-      !wrapperRef.current
+      !wrapperRef.current ||
+      isFeaturesLoading
     ) {
       return;
     }
@@ -87,7 +90,7 @@ export default function SpectrogramDisplay() {
       clearTimeout(slowLoadTimer);
       waveSurfer.destroy();
     };
-  }, [filePath, metadata, scale]);
+  }, [filePath, isFeaturesLoading, metadata, scale]);
 
   if (!filePath) {
     return (
@@ -137,18 +140,7 @@ export default function SpectrogramDisplay() {
         ref={wrapperRef}
         className="relative m-2 flex-grow overflow-hidden rounded-lg"
       >
-        <div className="absolute top-2 right-2 z-10">
-          {status !== "idle" && (
-            <button
-              type="button"
-              onClick={toggleScale}
-              className="rounded-full bg-black/30 px-2.5 py-1 text-xs font-semibold text-white transition-colors hover:bg-black/50 focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none"
-              aria-label={`Switch to ${scale === "linear" ? "logarithmic" : "linear"} scale`}
-            >
-              {scale === "linear" ? "LIN" : "LOG"}
-            </button>
-          )}
-        </div>
+        <div className="absolute top-2 right-2 z-10">{ToggleButton}</div>
         <div
           ref={containerRef}
           className={`h-full overflow-x-auto bg-gray-100 transition-opacity dark:bg-black ${status === "ready" ? "opacity-100" : "opacity-0"}`}
@@ -163,11 +155,6 @@ export default function SpectrogramDisplay() {
             <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">
               Generating spectrogram...
             </p>
-            {scale === "logarithmic" && (
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Logarithmic scale can take a bit longer.
-              </p>
-            )}
             {isSlowLoad && (
               <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
                 Loading is taking a while due to a large file or slow

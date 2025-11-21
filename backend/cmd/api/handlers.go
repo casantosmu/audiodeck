@@ -184,3 +184,14 @@ func (app *application) getAudioMetadataHandler(w http.ResponseWriter, r *http.R
 		app.serverErrorResponse(w, r, err)
 	}
 }
+
+func (app *application) getFeaturesHandler(w http.ResponseWriter, r *http.Request) {
+	response := Features{
+		EnableLogScale: app.features.enableLogScale,
+	}
+
+	err := writeJSON(w, http.StatusOK, response)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}

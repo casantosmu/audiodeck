@@ -16,3 +16,7 @@ type AudioMetadata struct {
 	SampleRate int     `json:"sampleRate"` // in Hz
 	Duration   float64 `json:"duration"`   // in seconds
 }
+
+type Features struct {
+	EnableLogScale bool `json:"enableLogScale"`
+}

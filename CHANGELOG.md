@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - The file browser now displays all detected audio files. Unsupported formats are shown as disabled.
-- Enhanced the spectrogram loading screen with contextual messages, including a warning for potentially longer waits when using the logarithmic scale and integrated feedback for slow loads.
 
 ### Fixed
 
@@ -18,6 +17,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Optimized Dockerfile to reduce final image size by only copying the compiled binary.
+- Enhanced the spectrogram loading screen.
+- The spectrogram scale toggle (linear/logarithmic) is now hidden by default due to performance issues. It can be enabled by setting the `ENABLE_LOG_SCALE=true` environment variable.
 
 ## [1.1.0] - 2025-10-12
 
