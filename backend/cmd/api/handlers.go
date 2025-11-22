@@ -130,6 +130,7 @@ func (app *application) getAudioFileHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	w.Header().Set("Cache-Control", "no-cache")
 	http.ServeContent(w, r, info.Name(), info.ModTime(), file)
 }
 
