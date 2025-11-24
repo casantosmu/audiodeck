@@ -53,15 +53,9 @@ func main() {
 		},
 	}
 
-	handler, err := app.routes()
-	if err != nil {
-		logger.Error("could not create routes", "error", err)
-		os.Exit(1)
-	}
-
 	srv := &http.Server{
 		Addr:     fmt.Sprintf(":%d", port),
-		Handler:  handler,
+		Handler:  app.routes(),
 		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
 	}
 

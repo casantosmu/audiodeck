@@ -21,7 +21,6 @@ COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
 COPY backend/ ./
-COPY --from=frontend /app/dist ./cmd/api/ui
 
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s' -o ./bin/audiodeck ./cmd/api
 
@@ -31,6 +30,7 @@ WORKDIR /app
 RUN apk add --no-cache tzdata mailcap
 
 COPY --from=backend /app/bin/audiodeck ./bin/audiodeck
+COPY --from=frontend /app/dist ./web
 
 EXPOSE 4747
 
