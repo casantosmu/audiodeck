@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - The file browser now displays all detected audio files. Unsupported formats are shown as disabled.
+- Support for multi-architecture Docker builds (`linux/amd64` and `linux/arm64`).
 
 ### Fixed
 
