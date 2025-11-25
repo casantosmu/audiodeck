@@ -14,20 +14,23 @@ RUN pnpm build
 FROM golang:1.25-alpine AS backend
 WORKDIR /app
 
+ARG TARGETOS
+ARG TARGETARCH
+
 COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
 COPY backend/ ./
-COPY --from=frontend /app/dist ./cmd/api/ui
 
-RUN go build -ldflags='-s' -o ./bin/audiodeck ./cmd/api
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s' -o ./bin/audiodeck ./cmd/api
 
 FROM alpine:3.22
 WORKDIR /app
 
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache tzdata mailcap
 
-COPY --from=backend /app ./
+COPY --from=backend /app/bin/audiodeck ./bin/audiodeck
+COPY --from=frontend /app/dist ./web
 
 EXPOSE 4747
 

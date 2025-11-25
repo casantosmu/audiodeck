@@ -21,5 +21,6 @@ export default function useAudioMetadata(filePath: string | null) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     queryFn: () => fetchAudioMetadata(filePath!),
     enabled: !!filePath,
+    retry: false,
   });
 }
