@@ -3,9 +3,11 @@ WORKDIR /app
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN corepack enable \
+    && corepack prepare pnpm@10.18.0 --activate
 
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
+
 RUN pnpm install --frozen-lockfile
 
 COPY frontend/ ./
@@ -27,7 +29,7 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags='-s' -o ./
 FROM alpine:3.22
 WORKDIR /app
 
-RUN apk add --no-cache tzdata mailcap
+RUN apk add --no-cache tzdata mailcap ffmpeg
 
 COPY --from=backend /app/bin/audiodeck ./bin/audiodeck
 COPY --from=frontend /app/dist ./web

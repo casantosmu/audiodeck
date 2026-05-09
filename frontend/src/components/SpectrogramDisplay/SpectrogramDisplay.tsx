@@ -65,7 +65,6 @@ export default function SpectrogramDisplay() {
     const waveSurfer = WaveSurfer.create({
       container: containerRef.current,
       height: 0,
-      url: `/v1/audio?path=${encodeURIComponent(filePath)}`,
       sampleRate: metadata.sampleRate,
       plugins: [spectrogramPlugin],
       interact: false,
@@ -77,16 +76,40 @@ export default function SpectrogramDisplay() {
       clearTimeout(slowLoadTimer);
     });
 
-    waveSurfer.on("error", (error) => {
-      // This error is triggered on component unmount, we can safely ignore it.
-      if (error.name === "AbortError") {
-        return;
+    let cancelled = false;
+
+    const loadAudio = async () => {
+      const encodedPath = encodeURIComponent(filePath);
+      const audioUrl = `/v1/audio?path=${encodedPath}`;
+      const pcmFallbackUrl = `/v1/audio/pcm?path=${encodedPath}`;
+
+      try {
+        await waveSurfer.load(audioUrl);
+      } catch (error) {
+        if (cancelled || (error instanceof Error && error.name === "AbortError")) {
+          return;
+        }
+
+        try {
+          await waveSurfer.load(pcmFallbackUrl);
+        } catch (fallbackError) {
+          if (
+            cancelled ||
+            (fallbackError instanceof Error && fallbackError.name === "AbortError")
+          ) {
+            return;
+          }
+
+          setStatus("error");
+          clearTimeout(slowLoadTimer);
+        }
       }
-      setStatus("error");
-      clearTimeout(slowLoadTimer);
-    });
+    };
+
+    void loadAudio();
 
     return () => {
+      cancelled = true;
       clearTimeout(slowLoadTimer);
       waveSurfer.destroy();
     };
